@@ -3,154 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aviator Pro | Controlled Edition</title>
+    <title>Aviator Ultimate | Admin Edition</title>
     <style>
-        :root { --red: #d61f27; --bg: #000; --panel: #1b1c20; --green: #28a745; --orange: #d97d00; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; overflow: hidden; }
+        :root {
+            --aviator-red: #d61f27;
+            --bet-green: #28a745;
+            --cashout-orange: #ff9800;
+            --bg-black: #000000;
+            --panel-grey: #1b1c21;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-black);
+            color: white;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Top Header Area */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+            background: #141516;
+            border-bottom: 1px solid #333;
+        }
+        .logo { color: var(--aviator-red); font-weight: 900; font-style: italic; font-size: 1.2rem; }
+        .balance-trigger { 
+            color: #28a745; 
+            font-weight: bold; 
+            border: 1px solid #28a745; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            cursor: pointer;
+        }
+
+        /* History Bar */
+        .history {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            background: #000;
+            overflow-x: hidden;
+            border-bottom: 1px solid #222;
+        }
+        .hist-chip { background: #2c2d30; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; color: #9c27b0; }
+
+        /* Main Game Stage */
+        .game-area {
+            height: 300px;
+            position: relative;
+            background: radial-gradient(circle at bottom left, #1e0506 0%, #000 70%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .multiplier { font-size: 5rem; font-weight: 900; z-index: 10; text-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .plane { position: absolute; bottom: 15%; left: 10%; width: 85px; z-index: 5; filter: drop-shadow(0 0 10px var(--aviator-red)); }
+        .flew-away-msg { position: absolute; top: 15%; color: var(--aviator-red); font-size: 1.8rem; font-weight: bold; display: none; z-index: 11; }
+
+        /* Betting Section - Mirroring your Image */
+        .betting-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+            background: #141516;
+        }
+        .bet-card {
+            background: var(--panel-grey);
+            border-radius: 15px;
+            padding: 12px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+        .input-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #000;
+            border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .input-box input { background: transparent; border: none; color: white; width: 60px; text-align: center; font-size: 1.1rem; font-weight: bold; }
         
-        /* Top Bar */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #141516; border-bottom: 1px solid #333; }
-        .balance { background: #000; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--green); cursor: pointer; }
+        .main-btn {
+            width: 100%;
+            height: 55px;
+            border-radius: 12px;
+            border: none;
+            color: white;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .btn-bet { background: var(--bet-green); }
+        .btn-cashout { background: var(--cashout-orange); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+        .btn-cashout small { font-size: 0.7rem; font-weight: normal; margin-top: 4px; }
 
-        /* Game Stage */
-        .stage { height: 350px; position: relative; background: radial-gradient(circle at bottom left, #230809 0%, #000 70%); display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .multiplier { font-size: 5rem; font-weight: 900; z-index: 10; font-family: 'Courier New', monospace; }
-        .plane { position: absolute; bottom: 15%; left: 10%; width: 100px; z-index: 5; transition: transform 0.1s linear; }
-        .flew-away { position: absolute; top: 15%; color: var(--red); font-size: 1.8rem; font-weight: bold; display: none; }
-
-        /* Controls */
-        .bet-interface { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #141516; height: 180px; }
-        .bet-card { background: var(--panel); border-radius: 15px; padding: 15px; border: 1px solid #333; text-align: center; }
-        .btn-main { width: 100%; height: 60px; border-radius: 12px; border: none; font-weight: 900; font-size: 1.3rem; cursor: pointer; color: white; margin-top: 10px; }
-        .btn-bet { background: var(--green); }
-        .btn-out { background: var(--orange); }
-
-        /* Hidden Admin Panel */
-        #adminPanel { position: fixed; top: 60px; right: 10px; background: #222; padding: 15px; border-radius: 10px; border: 1px solid var(--red); display: none; z-index: 100; }
-        .admin-btn { background: #444; color: white; border: 1px solid #666; padding: 5px; margin: 5px; cursor: pointer; font-size: 0.8rem; }
+        /* HIDDEN ADMIN PANEL (Wave Control) */
+        #adminPanel {
+            position: fixed;
+            top: 55px;
+            right: 15px;
+            background: #25262b;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--aviator-red);
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 30px rgba(0,0,0,1);
+        }
+        .admin-header { font-size: 0.8rem; color: var(--aviator-red); font-weight: bold; margin-bottom: 10px; text-align: center; }
+        .admin-input { width: 100%; padding: 8px; margin-bottom: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-<div class="top-bar">
-    <div style="font-weight: 800; font-size: 1.2rem;">AVIATOR</div>
-    <div class="balance" onclick="toggleAdmin()">KES <span id="userBal">1500.00</span></div>
+<div class="top-nav">
+    <div class="logo">Aviator</div>
+    <div class="balance-trigger" onclick="toggleAdmin()">6.86 KES</div>
 </div>
 
 <div id="adminPanel">
-    <div style="font-size: 0.7rem; color: var(--red); margin-bottom: 5px;">WAVE CONTROL</div>
-    <button class="admin-btn" onclick="setNext(1.00)">Force Crash (1.00x)</button>
-    <button class="admin-btn" onclick="setNext(2.50)">Medium (2.50x)</button>
-    <button class="admin-btn" onclick="setNext(15.00)">Big Win (15x)</button>
+    <div class="admin-header">WAVE CONTROL CENTER</div>
+    <label style="font-size: 0.7rem;">Set Next Crash Value:</label>
+    <input type="number" id="nextCrash" class="admin-input" placeholder="e.g. 5.50" step="0.01">
+    <button onclick="setOverride()" style="width: 100%; padding: 5px; background: var(--aviator-red); border: none; color: white; border-radius: 5px; font-weight: bold; cursor: pointer;">APPLY WAVE</button>
+    <div style="font-size: 0.6rem; margin-top: 10px; color: #888;">*Leave empty for Random RNG</div>
 </div>
 
-<div class="stage">
-    <div id="flewTxt" class="flew-away">FLEW AWAY!</div>
-    <div id="multVal" class="multiplier">1.00x</div>
-    <img src="https://i.ibb.co/L8N7hYy/plane.png" id="planeObj" class="plane">
+<div class="history" id="historyBar">
+    <span class="hist-chip">1.53x</span>
+    <span class="hist-chip">1.55x</span>
+    <span class="hist-chip">2.02x</span>
+    <span class="hist-chip">3.47x</span>
 </div>
 
-<div class="bet-interface">
+<div class="game-area">
+    <div id="flewAway" class="flew-away-msg">FLEW AWAY!</div>
+    <div id="mainMult" class="multiplier">1.00x</div>
+    <img src="https://i.ibb.co/L8N7hYy/plane.png" id="planeObj" class="plane" alt="plane">
+</div>
+
+<div class="betting-grid">
     <div class="bet-card">
-        <input type="number" value="100" style="width: 80%; padding: 5px; background: #000; color: #fff; border: 1px solid #444;">
-        <button id="btn1" class="btn-main btn-bet" onclick="handleAction(1)">BET</button>
+        <div class="input-box">
+            <button style="color: grey; background: none; border: none; font-size: 1.5rem;">-</button>
+            <input type="text" value="10.00">
+            <button style="color: grey; background: none; border: none; font-size: 1.5rem;">+</button>
+        </div>
+        <button id="btn1" class="btn-bet main-btn" onclick="handleBet(1)">Bet<br><small style="font-size: 0.7rem;">10.00 KES</small></button>
     </div>
+
     <div class="bet-card">
-        <input type="number" value="100" style="width: 80%; padding: 5px; background: #000; color: #fff; border: 1px solid #444;">
-        <button id="btn2" class="btn-main btn-bet" onclick="handleAction(2)">BET</button>
+        <div class="input-box">
+            <button style="color: grey; background: none; border: none; font-size: 1.5rem;">-</button>
+            <input type="text" value="10.00">
+            <button style="color: grey; background: none; border: none; font-size: 1.5rem;">+</button>
+        </div>
+        <button id="btn2" class="btn-bet main-btn" onclick="handleBet(2)">Bet<br><small style="font-size: 0.7rem;">10.00 KES</small></button>
     </div>
 </div>
 
 <script>
-    let balance = 1500.00;
-    let mult = 1.00;
-    let crash = 0;
-    let flying = false;
-    let nextCrashOverride = null;
+    let currentMultiplier = 1.00;
+    let crashPoint = 0;
+    let isFlying = false;
     let activeBets = { 1: false, 2: false };
-    let interval;
+    let gameInterval;
+    let adminOverrideValue = null;
 
-    function startRound() {
-        flying = true;
-        mult = 1.00;
-        document.getElementById('flewTxt').style.display = 'none';
-        document.getElementById('multVal').style.color = 'white';
-        
-        // Control Logic: Check if Admin set a value, else Random
-        crash = nextCrashOverride ? nextCrashOverride : (Math.random() * 3 + 1.1).toFixed(2);
-        nextCrashOverride = null; // Reset override after use
+    // --- Core Game Engine ---
+    function startNewRound() {
+        isFlying = true;
+        currentMultiplier = 1.00;
+        document.getElementById('flewAway').style.display = 'none';
+        document.getElementById('mainMult').style.color = 'white';
 
-        interval = setInterval(() => {
-            if (mult >= crash) {
+        // Logic: Check for Admin Override, otherwise use RNG
+        if (adminOverrideValue && adminOverrideValue > 1) {
+            crashPoint = parseFloat(adminOverrideValue);
+            adminOverrideValue = null; // Reset after use
+        } else {
+            // Standard Aviator Logic: High chance of low mults, rare high mults
+            let rng = Math.random();
+            if (rng < 0.1) crashPoint = 1.00; // 10% instant crash
+            else if (rng < 0.8) crashPoint = (Math.random() * 2 + 1.1).toFixed(2); // 70% low wave
+            else crashPoint = (Math.random() * 10 + 3).toFixed(2); // 20% high wave
+        }
+
+        gameInterval = setInterval(() => {
+            if (currentMultiplier >= crashPoint) {
                 endRound();
             } else {
-                mult += 0.01;
-                document.getElementById('multVal').innerText = mult.toFixed(2) + "x";
+                // Growth speed logic
+                let increment = 0.01 * Math.pow(currentMultiplier, 0.5);
+                currentMultiplier += increment;
+                document.getElementById('mainMult').innerText = currentMultiplier.toFixed(2) + "x";
                 
-                // Flight Path Curve
-                let x = (mult - 1) * 45;
-                let y = (mult - 1) * 25;
+                // Flight Curve
+                let x = (currentMultiplier - 1) * 35;
+                let y = (currentMultiplier - 1) * 22;
                 document.getElementById('planeObj').style.transform = `translate(${x}px, -${y}px)`;
                 
-                updateUI();
+                updateBetButtons();
             }
-        }, 60);
+        }, 80);
     }
 
     function endRound() {
-        clearInterval(interval);
-        flying = false;
-        document.getElementById('flewTxt').style.display = 'block';
-        document.getElementById('multVal').style.color = 'var(--red)';
+        clearInterval(gameInterval);
+        isFlying = false;
+        document.getElementById('flewAway').style.display = 'block';
+        document.getElementById('mainMult').style.color = 'var(--aviator-red)';
         
-        // Deduct losses if didn't cash out
-        [1, 2].forEach(i => { if(activeBets[i]) { balance -= 100; resetButton(i); } });
-        
-        document.getElementById('userBal').innerText = balance.toFixed(2);
-        setTimeout(startRound, 4000);
+        // Add to history
+        const history = document.getElementById('historyBar');
+        const chip = document.createElement('span');
+        chip.className = 'hist-chip';
+        chip.innerText = parseFloat(crashPoint).toFixed(2) + 'x';
+        history.prepend(chip);
+
+        // Reset Buttons
+        [1, 2].forEach(num => { resetButton(num); activeBets[num] = false; });
+
+        setTimeout(startNewRound, 4000); // 4 second break
     }
 
-    function handleAction(num) {
-        if (!flying) {
+    function handleBet(num) {
+        if (!isFlying) {
             activeBets[num] = true;
-            document.getElementById('btn' + num).innerText = "WAITING...";
+            document.getElementById('btn' + num).innerText = "Waiting...";
+            document.getElementById('btn' + num).style.opacity = "0.6";
         } else if (activeBets[num]) {
             // Cashout logic
-            let profit = 100 * mult;
-            balance += (profit - 100);
-            document.getElementById('userBal').innerText = balance.toFixed(2);
+            let cashoutValue = (10.00 * currentMultiplier).toFixed(2);
+            alert("Cashed Out: " + cashoutValue + " KES");
             activeBets[num] = false;
             resetButton(num);
         }
     }
 
-    function updateUI() {
-        [1, 2].forEach(i => {
-            if(activeBets[i] && flying) {
-                const btn = document.getElementById('btn' + i);
-                btn.className = "btn-main btn-out";
-                btn.innerHTML = `CASH OUT<br><span style="font-size:0.8rem">KES ${(100*mult).toFixed(2)}</span>`;
+    function updateBetButtons() {
+        [1, 2].forEach(num => {
+            if (activeBets[num]) {
+                const btn = document.getElementById('btn' + num);
+                btn.className = "main-btn btn-cashout";
+                btn.innerHTML = `Cash Out<br><small>${(10.00 * currentMultiplier).toFixed(2)} KES</small>`;
+                btn.style.opacity = "1";
             }
         });
     }
 
     function resetButton(num) {
         const btn = document.getElementById('btn' + num);
-        btn.className = "btn-main btn-bet";
-        btn.innerText = "BET";
+        btn.className = "main-btn btn-bet";
+        btn.innerHTML = `Bet<br><small>10.00 KES</small>`;
+        btn.style.opacity = "1";
     }
 
-    // Admin Controls
+    // --- Admin Functions ---
     function toggleAdmin() {
-        const p = document.getElementById('adminPanel');
-        p.style.display = p.style.display === 'block' ? 'none' : 'block';
-    }
-    function setNext(val) {
-        nextCrashOverride = val;
-        alert("Next Wave Set to: " + val + "x");
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
 
-    startRound();
+    function setOverride() {
+        const val = document.getElementById('nextCrash').value;
+        if (val) {
+            adminOverrideValue = val;
+            alert("Next wave will crash at: " + val + "x");
+            toggleAdmin();
+        }
+    }
+
+    // Start
+    startNewRound();
 </script>
 </body>
 </html>
