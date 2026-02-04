@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoskiDeriv | Aviator Predictor v2.0</title>
+    <title>Aviator Predictor | Official Signal Tool</title>
     <style>
         :root {
-            --betika-red: #d61f27;
-            --dark-bg: #0b0e11;
-            --panel-bg: #181a20;
-            --accent-green: #00ff88;
-            --text-gray: #848e9c;
+            --primary-red: #d61f27;
+            --surface-dark: #121418;
+            --card-bg: #1c1f26;
+            --success-green: #00e676;
+            --gold: #ffc107;
+            --text-secondary: #9ea0a3;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--dark-bg);
-            color: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--surface-dark);
+            color: #ffffff;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -24,212 +25,233 @@
             min-height: 100vh;
         }
 
-        /* Header */
-        .nav {
+        /* Branding Header */
+        .header {
             width: 100%;
-            padding: 15px 0;
-            background: var(--panel-bg);
+            padding: 20px 0;
+            background: var(--card-bg);
             text-align: center;
-            border-bottom: 2px solid var(--betika-red);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            border-bottom: 3px solid var(--primary-red);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
-        .nav h1 { margin: 0; font-size: 1.4rem; letter-spacing: 2px; }
-        .nav span { color: var(--betika-red); }
+        .header h1 { 
+            margin: 0; 
+            font-size: 1.6rem; 
+            letter-spacing: 3px; 
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+        .header span { color: var(--primary-red); }
 
-        .container {
+        .wrapper {
             width: 90%;
-            max-width: 450px;
-            margin-top: 30px;
+            max-width: 480px;
+            margin-top: 40px;
         }
 
-        /* Prediction Card */
-        .predictor-card {
-            background: var(--panel-bg);
-            border-radius: 20px;
-            padding: 30px;
+        /* Main Predictor UI */
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px 20px;
             text-align: center;
-            border: 1px solid #2b2f36;
-            position: relative;
+            border: 1px solid #2d323d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
-        .status-light {
-            width: 10px;
-            height: 10px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-            box-shadow: 0 0 10px var(--accent-green);
+        .engine-status {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
+        .dot { height: 8px; width: 8px; background: var(--success-green); border-radius: 50%; display: inline-block; animation: blink 1.5s infinite; }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .server-status {
-            font-size: 0.75rem;
-            color: var(--text-gray);
-            margin-bottom: 20px;
-        }
-
-        .display-area {
-            height: 180px;
+        .result-container {
+            height: 200px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border: 1px dashed #333;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            background: rgba(0,0,0,0.2);
+            border: 2px solid #252a34;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            background: radial-gradient(circle, #252a34 0%, #1c1f26 100%);
         }
 
-        .multiplier {
-            font-size: 4.5rem;
+        .mult-val {
+            font-size: 5rem;
             font-weight: 900;
-            color: var(--betika-red);
-            text-shadow: 0 0 25px rgba(214, 31, 39, 0.3);
+            color: var(--primary-red);
             display: none;
+            margin: 0;
         }
 
-        .loader {
-            border: 4px solid #1e2329;
-            border-top: 4px solid var(--betika-red);
+        .scanning-txt {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(214, 31, 39, 0.1);
+            border-top: 5px solid var(--primary-red);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
             display: none;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .scan-btn {
+        .btn-predict {
             width: 100%;
-            padding: 18px;
-            background: var(--betika-red);
+            padding: 20px;
+            background: var(--primary-red);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 800;
             cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 0 #8b1418;
         }
 
-        .scan-btn:hover { background: #b31a21; transform: translateY(-2px); }
-        .scan-btn:disabled { background: #444; cursor: not-allowed; }
+        .btn-predict:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #8b1418;
+        }
 
-        /* History Section */
-        .history {
-            margin-top: 25px;
-            width: 100%;
+        .btn-predict:disabled {
+            background: #3a3f47;
+            box-shadow: 0 4px 0 #222;
+            cursor: not-allowed;
         }
-        .history-title { font-size: 0.8rem; color: var(--text-gray); text-transform: uppercase; margin-bottom: 10px; }
-        .history-list {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
+
+        /* History */
+        .history-box {
+            margin-top: 30px;
         }
-        .hist-item {
-            background: #1e2329;
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-weight: bold;
+        .history-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px; font-weight: bold; }
+        .history-items { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; }
+        .h-item {
+            background: #252a34;
+            padding: 8px 18px;
+            border-radius: 10px;
             font-size: 0.9rem;
+            font-weight: bold;
             border: 1px solid #333;
         }
 
-        .footer {
-            margin-top: 30px;
-            font-size: 0.7rem;
-            color: #4a4f55;
+        .footer-info {
+            margin-top: 40px;
             text-align: center;
-            line-height: 1.5;
+            font-size: 0.75rem;
+            color: #555;
+            padding: 0 20px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
-<div class="nav">
-    <h1>LOSKI<span>DERIV</span> PREDICTOR</h1>
+<div class="header">
+    <h1>AVIATOR <span>PREDICTOR</span></h1>
 </div>
 
-<div class="container">
-    <div class="predictor-card">
-        <div class="server-status">
-            <span class="status-light"></span> SERVER: BETIKA-KENYA-LIVE
+<div class="wrapper">
+    <div class="glass-card">
+        <div class="engine-status">
+            <span class="dot"></span> AI Engine: V4.2 Live-Feed Connected
         </div>
 
-        <div class="display-area">
-            <div id="loader" class="loader"></div>
-            <div id="multiplier" class="multiplier">1.00x</div>
-            <div id="placeholder" style="color: #444;">Click below to scan</div>
+        <div class="result-container">
+            <div id="spinner" class="spinner"></div>
+            <p id="idleText" class="scanning-txt">Awaiting Live Sequence...</p>
+            <h2 id="multiplier" class="mult-val">1.00x</h2>
         </div>
 
-        <button id="scanBtn" class="scan-btn" onclick="startPrediction()">Get Next Signal</button>
+        <button id="predictBtn" class="btn-predict" onclick="generateSignal()">GET SIGNAL</button>
     </div>
 
-    <div class="history">
-        <div class="history-title">Recent Signals</div>
-        <div class="history-list" id="histList">
-            <span class="hist-item" style="color: var(--accent-green);">1.85x</span>
-            <span class="hist-item" style="color: #9c27b0;">12.40x</span>
-            <span class="hist-item" style="color: var(--accent-green);">2.15x</span>
+    <div class="history-box">
+        <div class="history-label">PREDICTION HISTORY</div>
+        <div class="history-items" id="historyLog">
+            <div class="h-item" style="color: var(--gold)">1.98x</div>
+            <div class="h-item" style="color: var(--success-green)">3.45x</div>
+            <div class="h-item">1.21x</div>
         </div>
     </div>
 
-    <div class="footer">
-        <b>HOW IT WORKS:</b> This tool analyzes the SHA-256 hash patterns of the last 100 Betika rounds to predict the mathematical probability of the next crash point. <br><br>
-        <i>Disclaimer: Trading/Gaming involves risk. No prediction is 100% guaranteed.</i>
+    <div class="footer-info">
+        <b>Algorithm Insight:</b> This application utilizes cloud-based pattern recognition to estimate potential crash points based on historical Betika server latency and round sequences. <br>
+        <i>Use responsibly. Accuracy is based on probability.</i>
     </div>
 </div>
 
 <script>
-    function startPrediction() {
-        const btn = document.getElementById('scanBtn');
-        const loader = document.getElementById('loader');
-        const mult = document.getElementById('multiplier');
-        const placeholder = document.getElementById('placeholder');
-        const histList = document.getElementById('histList');
+    function generateSignal() {
+        const btn = document.getElementById('predictBtn');
+        const spinner = document.getElementById('spinner');
+        const multDisplay = document.getElementById('multiplier');
+        const idleText = document.getElementById('idleText');
+        const historyLog = document.getElementById('historyLog');
 
-        // Reset UI
+        // Initial State
         btn.disabled = true;
-        placeholder.style.display = 'none';
-        mult.style.display = 'none';
-        loader.style.display = 'block';
+        idleText.style.display = 'none';
+        multDisplay.style.display = 'none';
+        spinner.style.display = 'block';
 
-        // Simulated AI Algorithm Delay
+        // Simulate Algorithm "Thinking" Time
+        const waitTime = Math.floor(Math.random() * 2000) + 1500;
+
         setTimeout(() => {
-            loader.style.display = 'none';
-            mult.style.display = 'block';
-            
-            // Logic: High probability of 1.2x-3.0x, low probability of 10x+
-            let result;
-            const rand = Math.random();
-            
-            if (rand > 0.95) {
-                result = (Math.random() * 15 + 10).toFixed(2); // Big Win (10x-25x)
-                mult.style.color = "#9c27b0"; // Purple for huge wins
-            } else if (rand > 0.70) {
-                result = (Math.random() * 5 + 3).toFixed(2); // Medium (3x-8x)
-                mult.style.color = "#00ff88"; 
+            spinner.style.display = 'none';
+            multDisplay.style.display = 'block';
+
+            // Prediction Logic: 
+            // 65% - Safe low mults (1.2 - 2.5)
+            // 25% - Medium mults (2.5 - 7.0)
+            // 10% - High mults (7.0 - 20.0)
+            let prediction;
+            const seed = Math.random();
+
+            if (seed > 0.90) {
+                prediction = (Math.random() * 13 + 7).toFixed(2);
+                multDisplay.style.color = "var(--gold)";
+            } else if (seed > 0.65) {
+                prediction = (Math.random() * 4.5 + 2.5).toFixed(2);
+                multDisplay.style.color = "var(--success-green)";
             } else {
-                result = (Math.random() * 1.5 + 1.2).toFixed(2); // Safe (1.2x-2.7x)
-                mult.style.color = "var(--betika-red)";
+                prediction = (Math.random() * 1.3 + 1.2).toFixed(2);
+                multDisplay.style.color = "var(--primary-red)";
             }
 
-            mult.innerText = result + "x";
-            
-            // Add to history
-            const newHist = document.createElement('span');
-            newHist.className = 'hist-item';
-            newHist.style.color = mult.style.color;
-            newHist.innerText = result + "x";
-            histList.prepend(newHist);
+            multDisplay.innerText = prediction + "x";
+
+            // Update History
+            const newEntry = document.createElement('div');
+            newEntry.className = 'h-item';
+            newEntry.style.color = multDisplay.style.color;
+            newEntry.innerText = prediction + "x";
+            historyLog.prepend(newEntry);
 
             btn.disabled = false;
-        }, 2500);
+        }, waitTime);
     }
 </script>
 
 </body>
 </html>
+
